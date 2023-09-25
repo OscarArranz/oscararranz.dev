@@ -1,4 +1,3 @@
-import util from "node:util";
 import { getPostPaths } from "../utils";
 import PostFolder from "./PostFolder";
 import PostEntry from "./PostEntry";
@@ -22,6 +21,7 @@ const renderTree = (
         title={sideBarEntry.folderTitle}
         key={sideBarEntry.url + "_folder"}
         isRootFolder={isRootFolder}
+        url={sideBarEntry.url}
       >
         {Array.from(sideBarEntry.entries.values()).map((entry) =>
           renderTree(entry, false, entry.url),
@@ -46,7 +46,11 @@ const BlogSidebar = async () => {
     sidebarMainEntry.addEntry(`${dir && dir !== "" ? `${dir}/` : ""}${name}`),
   );
 
-  return <aside>{renderTree(sidebarMainEntry, true)}</aside>;
+  return (
+    <aside className="hidden md:flex box-border w-[20rem] gap-2 dark:text-white h-full p-4">
+      {renderTree(sidebarMainEntry, true)}
+    </aside>
+  );
 };
 
 export default BlogSidebar;

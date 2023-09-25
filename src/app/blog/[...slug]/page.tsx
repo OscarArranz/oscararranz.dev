@@ -1,9 +1,16 @@
+import { MDXRemote } from "next-mdx-remote/rsc";
+import { getPost } from "../utils";
+import path from "path";
+
 interface BlogPostProps {
   params: { slug: string[] };
 }
 
-const BlogPost = ({ params }: BlogPostProps) => {
-  return <>{params.slug[2]}</>;
+const BlogPost = async ({ params }: BlogPostProps) => {
+  const { content } = await getPost(
+    path.normalize(`./${params.slug.join("/")}.mdx`),
+  );
+  return <MDXRemote source={content} />;
 };
 
 export default BlogPost;

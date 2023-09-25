@@ -1,3 +1,4 @@
+import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 
@@ -15,7 +16,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={"h-screen w-screen dark:bg-gray-950 " + inter.className}>
+        <div className="m-auto max-w-7xl">{children}</div>
+      </body>
     </html>
   );
 }
