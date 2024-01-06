@@ -1,23 +1,25 @@
-export default class SidebarEntry {
-  private __entries: Map<string, SidebarEntry> = new Map();
+export default class NavigatorEntry {
+  private __entries: Map<string, NavigatorEntry> = new Map();
   private __folderTitle: string;
 
   constructor(
+    // eslint-disable-next-line no-unused-vars
     private __hasPost: boolean,
+    // eslint-disable-next-line no-unused-vars
     private __url: string,
-    private __title: string,
+    private __title: string
   ) {
     this.__folderTitle =
-      __title.charAt(0).toUpperCase() + __title.slice(1).replaceAll("-", " ");
+      __title.charAt(0).toUpperCase() + __title.slice(1).replaceAll('-', ' ');
   }
 
   private getEntry(path: string) {
     return this.__entries.get(path);
   }
 
-  public addEntry(path: string, parentPath: string = "") {
-    const pathFragments = path.split("/");
-    const url = `${parentPath && parentPath !== "" ? `${parentPath}/` : ""}${
+  public addEntry(path: string, parentPath: string = '') {
+    const pathFragments = path.split('/');
+    const url = `${parentPath && parentPath !== '' ? `${parentPath}/` : ''}${
       pathFragments[0]
     }`;
 
@@ -30,7 +32,7 @@ export default class SidebarEntry {
         return;
       }
 
-      this.__entries.set(url, new SidebarEntry(true, url, path));
+      this.__entries.set(url, new NavigatorEntry(true, url, path));
 
       return;
     }
@@ -38,11 +40,11 @@ export default class SidebarEntry {
     let entry = this.getEntry(url);
 
     if (!entry) {
-      entry = new SidebarEntry(false, url, pathFragments[0]);
+      entry = new NavigatorEntry(false, url, pathFragments[0]);
       this.__entries.set(url, entry);
     }
 
-    entry.addEntry(pathFragments.slice(1).join("/"), url);
+    entry.addEntry(pathFragments.slice(1).join('/'), url);
   }
 
   public get title() {
