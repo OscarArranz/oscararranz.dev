@@ -7,6 +7,7 @@ import Search from '../../../app/blog/components/Search';
 import { BlogNavigatorClient } from '../../../app/blog/components/BlogNavigator/BlogNavigatorClient';
 import Link from 'next/link';
 import { PostSearchResultsResponse } from '../../../posts';
+import ThemeSwitch from './ThemeSwitch';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -30,18 +31,22 @@ const Navbar = () => {
         <Link href="/" className="text-2xl">
           Oscar Arranz
         </Link>
-        <HamburguerMenuButton
-          isOpen={isOpen}
-          onClick={toggleOpen}
-          className="hidden dark:block md:hidden"
-        />
-        <HamburguerMenuButton
-          isOpen={isOpen}
-          onClick={toggleOpen}
-          color="#000000"
-          className="block dark:hidden md:hidden"
-        />
-        <div className="hidden md:inline-block">
+        <div className="flex gap-8 md:hidden items-center">
+          <ThemeSwitch />
+          <HamburguerMenuButton
+            isOpen={isOpen}
+            onClick={toggleOpen}
+            className="hidden dark:block"
+          />
+          <HamburguerMenuButton
+            isOpen={isOpen}
+            onClick={toggleOpen}
+            color="#000000"
+            className="block dark:hidden"
+          />
+        </div>
+        <div className="hidden md:flex gap-8 items-center">
+          <ThemeSwitch />
           <Search
             searchResults={searchResults}
             setSearchResults={setSearchResults}
