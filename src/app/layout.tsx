@@ -2,6 +2,7 @@ import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import Navbar from '../components/ui/Navbar/Navbar';
+import Providers from './providers';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -16,10 +17,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={'h-full w-full dark:bg-gray-950 ' + inter.className}>
-        <Navbar />
-        <div className="m-auto max-w-7xl">{children}</div>
+        <Providers>
+          <Navbar />
+          <main className="m-auto max-w-7xl">{children}</main>
+        </Providers>
       </body>
     </html>
   );
