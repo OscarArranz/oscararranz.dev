@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { computeEntryIndentation } from "./utils";
-import ArrowRightIcon from "remixicon-react/ArrowRightSLineIcon";
+import { useState } from 'react';
+import { computeEntryIndentation } from './utils';
+import ArrowRightIcon from 'remixicon-react/ArrowRightSLineIcon';
 
 interface PostFolderProps {
   title: string;
@@ -40,16 +40,17 @@ const PostFolder = ({
         onClick={toggleOpen}
       >
         <span>{title}</span>
-        <div className="-mr-1 ml-4 hover:bg-blue-400 dark:hover:bg-gray-700 rounded transition-colors">
+        <div className="-mr-1 ml-4 hover:bg-blue-400 dark:hover:bg-gray-800 rounded transition-colors">
           <ArrowRightIcon
-            className={`w-5 h-5 ${isOpen ? "rotate-90" : ""
-              } transition-transform`}
+            className={`w-5 h-5 ${
+              isOpen ? 'rotate-90' : ''
+            } transition-transform`}
           />
         </div>
       </button>
       {isOpen && (
         <div className="relative mt-2">
-          <div className="absolute w-[1px] h-[95%] top-[5%] left-2 bg-gray-800" />
+          <div className="absolute w-[1px] h-[95%] top-[5%] left-2 bg-gray-300 dark:bg-gray-800" />
           <ul className="flex flex-col gap-2">{children}</ul>
         </div>
       )}
