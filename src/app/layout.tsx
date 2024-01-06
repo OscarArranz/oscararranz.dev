@@ -18,10 +18,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={'h-full w-full dark:bg-gray-950 ' + inter.className}>
+      <body
+        className={
+          'h-full w-full dark:bg-gray-950 flex flex-col items-center ' +
+          inter.className
+        }
+      >
         <Providers>
           <Navbar />
-          <main className="m-auto max-w-7xl">{children}</main>
+          <main className="m-auto 2xl:w-[1536px] mt-32 p-4">{children}</main>
         </Providers>
       </body>
     </html>
