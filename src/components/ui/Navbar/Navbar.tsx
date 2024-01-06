@@ -25,9 +25,9 @@ const Navbar = () => {
     <nav
       className={`${
         isOpen ? 'h-full md:h-auto' : ''
-      } fixed w-full top-0 dark:bg-gray-950 transition-all`}
+      } fixed flex justify-center w-full top-0 transition-all`}
     >
-      <div className="flex justify-between items-center p-4 dark:text-white">
+      <div className="2xl:w-[1536px] bg-white dark:bg-gray-950 flex justify-between items-center p-4 dark:text-white">
         <Link href="/" className="text-2xl">
           Oscar Arranz
         </Link>
