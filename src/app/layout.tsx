@@ -26,7 +26,9 @@ export default function RootLayout({
       >
         <Providers>
           <Navbar />
-          <main className="m-auto xl:w-[1280px] mt-32 p-4">{children}</main>
+          <main className="w-full xl:w-[1280px] mt-24 py-4 px-6 xl:p-32">
+            {children}
+          </main>
         </Providers>
       </body>
     </html>

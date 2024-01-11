@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import Search from '../../../app/blog/components/Search';
 import { BlogNavigatorClient } from '../../../app/blog/components/BlogNavigator/BlogNavigatorClient';
 import Link from 'next/link';
-import { PostSearchResultsResponse } from '../../../posts';
+import { PostSearchResultsResponse } from '../../../utils/posts';
 import ThemeSwitch from './ThemeSwitch';
 
 const Navbar = () => {
@@ -25,7 +25,7 @@ const Navbar = () => {
     <nav
       className={`${
         isOpen ? 'h-full md:h-auto' : ''
-      } fixed flex justify-center w-full top-0 transition-all`}
+      } fixed md:flex justify-center w-full top-0 transition-all z-10`}
     >
       <div className="w-full xl:w-[1280px] bg-white dark:bg-gray-950 flex justify-between items-center p-4 dark:text-white">
         <Link href="/" className="text-2xl">

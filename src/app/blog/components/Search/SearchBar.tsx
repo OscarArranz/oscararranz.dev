@@ -3,30 +3,31 @@
 import React, {
   Dispatch,
   SetStateAction,
+  forwardRef,
   useCallback,
   useEffect,
+  useImperativeHandle,
   useRef,
   useState,
 } from 'react';
 import { querySearchResults } from './queries';
 import { debounce } from '../../../../utils';
-import { PostSearchResultsResponse } from '../../../../posts';
+import { PostSearchResultsResponse } from '../../../../utils/posts';
 
 interface SearchBarProps {
   searchQuery: string;
   setSearchQuery: Dispatch<SetStateAction<string>>;
   setSearchResults: Dispatch<SetStateAction<PostSearchResultsResponse | null>>;
-  setInputIsFocused: Dispatch<SetStateAction<boolean>>;
 }
 
-const SearchBar = ({
-  searchQuery,
-  setSearchQuery,
-  setSearchResults,
-  setInputIsFocused,
-}: SearchBarProps) => {
+const SearchBar = (
+  { searchQuery, setSearchQuery, setSearchResults }: SearchBarProps,
+  ref: React.ForwardedRef<HTMLInputElement>
+) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [keyboardShortcut, setKeyboardShortcut] = useState('CTRL K');
+
+  useImperativeHandle(ref, () => inputRef.current!);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const getSearchResultsDebounced = useCallback(
@@ -45,7 +46,6 @@ const SearchBar = ({
   };
 
   const changeFocus = () => {
-    setInputIsFocused((prev) => !prev);
     setKeyboardShortcut((prev) => {
       if (prev === 'CTRL K') return 'ESC';
       return 'CTRL K';
@@ -92,4 +92,4 @@ const SearchBar = ({
   );
 };
 
-export default SearchBar;
+export default forwardRef<HTMLInputElement, SearchBarProps>(SearchBar);

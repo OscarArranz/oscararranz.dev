@@ -1,9 +1,11 @@
 import Link from 'next/link';
-import { PostSearchResultsResponse } from '../../../../posts';
+import { PostSearchResultsResponse } from '../../../../utils/posts';
 import './scrollbar.css';
+import React, { useEffect, useRef, useState } from 'react';
 
 interface SearchResultsProps {
   searchResults: PostSearchResultsResponse;
+  searchBarRef?: React.RefObject<HTMLInputElement>;
 }
 
 interface SearchResultProps {
@@ -64,13 +66,49 @@ const SearchResult = ({ title, content, url }: SearchResultProps) => {
   );
 };
 
-const SearchResults = ({ searchResults }: SearchResultsProps) => {
-  if (!searchResults || Object.keys(searchResults.searchResults).length === 0) {
+const SearchResults = ({ searchResults, searchBarRef }: SearchResultsProps) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const searchResultsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const searchBarElement = searchBarRef?.current;
+
+    if (!searchBarElement) return;
+
+    if (searchBarElement === document.activeElement) setIsOpen(true);
+
+    const handleFocus = () => setIsOpen(true);
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (
+        !searchResultsRef.current?.contains(event.target as Node) &&
+        !searchBarElement.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    searchBarElement.addEventListener('focus', handleFocus);
+    document.addEventListener('click', handleOutsideClick);
+
+    return () => {
+      searchBarElement.removeEventListener('focus', handleFocus);
+      document.removeEventListener('click', handleOutsideClick);
+    };
+  }, [searchBarRef]);
+
+  if (
+    !searchResults ||
+    Object.keys(searchResults.searchResults).length === 0 ||
+    !isOpen
+  ) {
     return null;
   }
 
   return (
-    <div className="dark:text-white mt-4 md:absolute md:w-[35rem] md:right-0 md:p-4 md:bg-gray-100 md:rounded-xl md:dark:bg-gray-900 md:max-h-96 overflow-y-scroll scrollbar">
+    <div
+      ref={searchResultsRef}
+      className="dark:text-white mt-4 md:absolute md:w-[35rem] md:right-0 md:p-4 md:bg-gray-100 md:rounded-xl md:dark:bg-gray-900 md:max-h-96 overflow-y-scroll scrollbar shadow-2xl"
+    >
       {mapSearchResults(searchResults)}
     </div>
   );
