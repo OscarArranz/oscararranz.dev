@@ -11,6 +11,9 @@ export interface PostPath {
 export interface PostData {
   title: string;
   content: any;
+  date: Date;
+  tags: string[];
+  url: string;
 }
 
 export type PostSearchResultContent = {
@@ -33,6 +36,12 @@ export type PostSearchResultsResponse = {
 
 export type PostPaths = PostPath[];
 
+const buildPostTags = (tags: string): string[] => {
+  if (!tags || tags === '') return [];
+
+  return tags.split(', ').map((tag: string) => tag.trim());
+};
+
 export const getPostPaths = async (): Promise<PostPaths> => {
   const postsPath = await fs.readdir('./posts/', { recursive: true });
 
@@ -51,12 +60,35 @@ export const getPostPaths = async (): Promise<PostPaths> => {
 
 export const getPost = async (fileUrl: string): Promise<PostData | null> => {
   const postPath = path.join('./posts/', fileUrl);
+
   try {
     const postFileContent = await fs.readFile(postPath);
     const { data, content } = matter(postFileContent);
 
-    return { ...data, content } as PostData;
+    const tags = buildPostTags(data.tags);
+
+    return {
+      ...data,
+      content,
+      tags,
+      url: `/blog/${fileUrl.replace('.mdx', '')}`,
+    } as PostData;
   } catch (error) {
     return null;
   }
+};
+
+export const getLatestPosts = async (limit = 5): Promise<PostData[]> => {
+  const postPaths = await getPostPaths();
+  const posts: PostData[] = (await Promise.all(
+    postPaths
+      .map(async ({ dir, name, ext }) => {
+        return await getPost(path.join(dir, name + ext));
+      })
+      .filter((post) => post !== null)
+  )) as PostData[];
+
+  posts.sort((a, b) => b.date.getTime() - a.date.getTime());
+
+  return posts.slice(0, limit);
 };

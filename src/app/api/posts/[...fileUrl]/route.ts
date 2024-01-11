@@ -1,5 +1,5 @@
 import path from 'path';
-import { getPost } from '../../../../posts';
+import { getPost } from '../../../../utils/posts';
 
 export const GET = async (
   _request: Request,

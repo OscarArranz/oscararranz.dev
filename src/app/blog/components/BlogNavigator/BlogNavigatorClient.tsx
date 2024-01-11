@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { PostPaths } from '../../../../posts';
+import { PostPaths } from '../../../../utils/posts';
 import { queryPostPaths } from './queries';
 import BlogNavigator from './BlogNavigator';
 import { createMainNavigationEntry } from './utils';

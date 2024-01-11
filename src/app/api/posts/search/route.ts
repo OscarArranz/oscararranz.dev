@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 import { spawnSync } from 'child_process';
 import matter from 'gray-matter';
 import { readFileSync } from 'fs';
-import { PostSearchResults } from '../../../../posts';
+import { PostSearchResults } from '../../../../utils/posts';
 import { removeMarkdown } from '../../../../utils';
 
 export const GET = async (request: NextRequest) => {

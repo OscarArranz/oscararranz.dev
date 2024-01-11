@@ -1,4 +1,4 @@
-import { PostPaths } from '../../../../../posts';
+import { PostPaths } from '../../../../../utils/posts';
 import NavigatorEntry from './NavigatorEntry';
 
 export const computeEntryIndentation = (url: string) =>

@@ -1,4 +1,4 @@
-import { PostData, PostPaths } from '../../../../../posts';
+import { PostData, PostPaths } from '../../../../../utils/posts';
 
 export const queryPostPaths = async (): Promise<PostPaths> => {
   const response = await fetch(`${process.env.NEXT_PUBLIC_API}/posts/paths`);

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { computeEntryIndentation } from './utils';
-import { PostData } from '../../../../posts';
+import { PostData } from '../../../../utils/posts';
 
 export interface CommonPostEntryProps {
   url: string;
