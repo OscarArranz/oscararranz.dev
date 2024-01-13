@@ -14,15 +14,15 @@ export const GET = async (request: NextRequest) => {
   }
 
   try {
-    const find = spawnSync('find', ['-type', 'f', '-name', '*.mdx']);
+    const find = spawnSync('find', ['-type', 'f', '-name', '*.mdx'], {
+      cwd: getPublicFilePath('./posts'),
+    });
     const fileUrls = find.stdout.toString().split('\n').slice(0, -1);
-    const grep = spawnSync('grep', [
-      '-n',
-      '-i',
-      '-E',
-      searchQuery,
-      ...fileUrls,
-    ]);
+    const grep = spawnSync(
+      'grep',
+      ['-n', '-i', '-E', searchQuery, ...fileUrls],
+      { cwd: getPublicFilePath('./posts') }
+    );
     const grepResults = grep.stdout.toString().split('\n').slice(0, -1);
 
     const searchResults = grepResults.reduce((prev, cur) => {
