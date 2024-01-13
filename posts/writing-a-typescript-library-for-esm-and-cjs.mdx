@@ -1,0 +1,289 @@
+---
+title: Writing a Typescript library for ESM and CJS
+date: 2024-01-11T23:01:04.504Z
+tags: typescript, javascript, nodejs, esm, cjs, library, npm
+---
+
+The other day I was at work and I needed to verify some Azure JWTs. I wasn't going to write the logic to do so, _of course_, so I quickly opened Github instead and went in search of a nice library that would hopefully solve my problem. Conveniently, there was a small library that did this, so I did what anyone would have done in my position: **I installed the library and prayed that it would work out of the box**. I crossed my fingers, run `npm install`, imported the package and... **I got an error that told me I couldn't import an ESM package**.
+
+See, the project I was working on uses Typescript and the code gets transpiled to CJS (_Common JS_), which is incompatible with ESM (_ES Modules_).
+
+I quickly went back to the repo's Github page and saw that it's latest update had been six months ago, which told me that it was probably up to date though **it probably wasn't being maintained anymore**. I confirmed the latter when I opened the issues page, there I found a couple of issues from two years ago still open and with no response from the owner of the repo.
+
+At this point there were only two paths I could take:
+
+1. **Write my own Azure JWT verification tool**.
+
+2. **Transpile the library to CJS** to make it compatible with the project I was working on.
+
+As one might expect, **I chose the latter and decided to fork the repo of the library and add compatibility with CJS without removing the ESM compatibility**. Let me show you how to do this on your own libraries.
+
+# Writing a simple math library
+
+**We're going to write a library that will do some mathematical operations for us**, we'll keep it simple and write only two functions, one for summing and one for substracting.
+
+But first of all, **let's initialize our project** by creating a folder with `mkdir math-lib && cd math-lib` and creating a default _package.json_ file with `npm init -y`.
+
+Now that we've initialized our project **we have to install typescript**, we can do so running `npm install typescript --save-dev`. We also need to initialize a basic _tsconfig.json_ file, which we can do by running `npx tsc --init`.
+
+## Implementing our library functions
+
+We've set up our project, that's great but... wait, **we have no functionality**!
+
+As I said before, we're going to keep things simple and implement only a couple of functions, one to sum two numbers and one to substract them. Feel free to copy and paste the code below into your _index.ts_, it's not like the code has much complexity anyways.
+
+```ts
+// index.ts
+
+export const sum = (a: number, b: number): number => a + b;
+export const substract = (a: number, b: number): number => a - b;
+```
+
+Maybe this is too simple, isn't it? **Let's add a file called** **_complex.ts_** **with the same sum and substract functions but this time for complex numbers:**
+
+```ts
+// complex.ts
+
+// We will need an interface to define the structure of a complex number
+export interface ComplexNumber {
+  real: number;
+  imaginary: number;
+}
+
+export const sum = (a: ComplexNumber, b: ComplexNumber): ComplexNumber => ({
+  real: a.real + b.real,
+  imaginary: a.imaginary + b.imaginary,
+});
+
+export const substract = (
+  a: ComplexNumber,
+  b: ComplexNumber
+): ComplexNumber => ({
+  real: a.real - b.real,
+  imaginary: a.imaginary - b.imaginary,
+});
+```
+
+## Building our library for CJS and ESM
+
+Now that our library has gotten a bit more _complex_ (sorry for that), it's time to do what we're here for, **build our library for both CJS and ESM**.
+
+### Configuring the typescript transpiler
+
+To start, **we need to configure our typescript compiler to be able to output both CJS and ESM compatible build codes**, as well as our type definitions.
+
+We will do so by creating three different files inside the root of our project:
+
+1. **tsconfig-base.json:** This file will have a **shared configuration** for transpiling the code into CJS and ESM distributable codes.
+
+2. **tsconfig-cjs.json:** This is where we will configure the specific options needed to transpile for CJS compatibility.
+
+3. **tsconfig.json:** This is where we will configure the specific options needed to transpile for ESM compatibility. You might be wondering why this file isn't called _tsconfig-esm.json,_ this is because **we need a _tsconfig.json_ file in the root of our project for the Language Server of our IDE or code editor to know how our typescript compiler is configured**.
+
+Alright, now that we have created the files, let's populate them with some data:
+
+```json
+// tsconfig.json (ESM Configuration)
+
+{
+  "extends": "./tsconfig-base.json", // We extend from our shared configuration
+  "compilerOptions": {
+    "module": "esnext", // We use the module system of the upcoming version of ECMAScript
+    "outDir": "dist/esm", // We will output our build files inside './dist/esm'
+    "target": "esnext" // We transpile for the upcoming version of ECMAScript
+  }
+}
+```
+
+```json
+// tsconfig-cjs.json (CJS Configuration)
+
+{
+  "extends": "./tsconfig-base.json", // We extend from our shared configuration
+  "compilerOptions": {
+    "module": "commonjs", // We use the module system of CommonJS
+    "outDir": "dist/cjs", // We will output our files inside './dist/cjs'
+    "target": "es2015" // We transpile for the upcoming version of CommonJS
+  }
+}
+```
+
+```json
+// tsconfig-base.json (Shared Configuration)
+
+// This is a basic configuration for the typescript transpiler, you
+// don't need to use this and, in fact, I'd advise you to tweak this
+// file to your own needs and desires.
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "lib": ["es6", "dom"],
+    "module": "node16",
+    "moduleResolution": "node",
+    "noImplicitAny": true,
+    "outDir": "dist",
+    "target": "ES2019"
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/**/*.spec.ts"]
+}
+```
+
+Feel free to copy the contents of these files, just **remember that JSON files cannot have comments inside of them**.
+
+### Writing a build script
+
+Now that our typescript transpiler is all set up and ready to transpile our code we need to start thinking about **writing a build script**. Instead of writing a single build script we're going to **separate the build script into different parts to then combine them in the main build script**, this will keep our _package.json_ file more organized and it will also make it easier to read and understand the different parts of the build process of our library.
+
+#### 1. Building our type definitions
+
+To start, we'll open our _package.json_ file and add the following line under the scripts section:
+
+```json
+// package.json
+
+{
+  "scripts": {
+    "build:types": "tsc --declarationDir ./dist/types --declaration --emitDeclarationOnly"
+  }
+}
+```
+
+This line will specifically **build the type declarations of our code**, this only needs to happen once as **these type declarations will be shared by both our CJS and ESM compatible codes**.
+
+#### 2. Building our code for CJS and ESM
+
+Once we have the script to build our types **we're going to want to write the scripts that will actually build the code compatible with CJS and ESM**. To do so, we will add this two scripts under the last script:
+
+```json
+// package.json
+
+{
+  "scripts": {
+    "build:types": "tsc --declarationDir ./dist/types --declaration --emitDeclarationOnly",
+    "build:esm": "tsc -p tsconfig.json", // <-- Add this line
+    "build:cjs": "tsc -p tsconfig-cjs.json" // <-- And this line
+  }
+}
+```
+
+#### 3. Populating the dist folder
+
+Great! If you remember, when we set up the typescript transpiler **we told the CJS code to go under** `./dist/cjs` and the **ESM code to go under** `./dist/esm`. **We've also written a script that will output the type declaration files under** `./dist/types`.
+
+So far though, the `./dist` folder is completely empty, **we're going to fix that with a custom bash script that will populate the** `./dist` folder **with the _package.json_ and the rest of the files that belong there**, and, while we're at it, **we will also generate a couple of _package.json_ files specific to the** `./dist/cjs` **and** `./dist/esm` **folders**.
+
+But just before we do all this, we need to remove this line from the _package.json_ file if it exists:
+
+```json
+// package.json
+
+{
+  "type": "commonjs/module" // <-- This is the line we need to remove if it exists, it will probably have either commonjs or module as it's value, either way, just remove this line
+}
+```
+
+Now that we've removed the `type` field from our _package.json_, **we are going to create a file named** **_build-populate.sh_** **under the root of our project** with the following contents:
+
+```bash
+# build-populate.sh
+
+#!/bin/bash
+
+# Copy the main package.json file to the dist folder
+cp package.json dist/package.json
+# Copy the readme file to the dist folder
+cp README.md dist/README.md
+# In case you have a license, also copy the license file to the dist folder
+cp LICENSE dist/LICENSE
+
+# Generate the CJS specific package.json
+cat > dist/cjs/package.json << EOF
+{
+    "type": "commonjs"
+}
+EOF
+
+# Generate the ESM specific package.json
+cat > dist/esm/package.json << EOF
+{
+    "type": "module"
+}
+EOF
+```
+
+Just before we rush into the next step, **let's run the following command to make sure that our** **_build-populate.sh_** **is executable:** `chmod +x build-populate.sh`.
+
+#### 4. An extra step to make sure projects can import our library correctly
+
+So far, we could write a build script combining the `build:*` scripts we already have and we would get our library built, however, **if we tried to import our library inside of another project, it would have no idea of where to find the code when importing it and where to find the type declarations**. To fix this, we're going to the following fields inside our _package.json_ file:
+
+```json
+// package.json
+
+{
+  "types": "./dist/types/index.d.ts", // Our main types declaration file
+  "exports": {
+    // If we import or require the route './' ...
+    ".": {
+      "import": "./dist/esm/index.js", // This is the path to resolve the index.js file when using import (ESM)
+      "require": "./dist/cjs/index.js", // This is the path to resolve the index.js file when using require (CJS)
+      "types": "./dist/types/index.d.ts" // This is the path where the types of index.js are located
+    },
+    // If we import or require the route './complex' ...
+    "./complex": {
+      "import": "./dist/esm/complex.js", // This is the path to resolve the complex.js file when using import (ESM)
+      "require": "./dist/cjs/complex.js", // This is the path to resolve the complex.js file when using require (CJS)
+      "types": "./dist/types/complex.d.ts" // This is the path where the types of complex.js are located
+    }
+  },
+  // This will tell npm to publish only the files inside the dist folder,
+  // it will be useful later
+  "files": ["dist"]
+}
+```
+
+#### 5. Tying it all together inside a main build script
+
+We are finally ready to tie it all together and **write our main build script**. This might be the easiest part of it all, just add this line under the _scripts_ section of your _package.json_ file:
+
+```json
+// package.json
+
+{
+  "scripts": {
+    "build:types": "tsc --declarationDir ./dist/types --declaration --emitDeclarationOnly",
+    "build:esm": "tsc -p tsconfig.json",
+    "build:cjs": "tsc -p tsconfig-cjs.json",
+    "build": "rm -rf dist/* && npm run build:esm && npm run build:esm && npm run build:cjs && ./build-populate.sh" // <-- Add this line
+  }
+}
+```
+
+Oh! **I guess that you'll also want to publish your library, so make sure you also add this script to the _package.json_ file**:
+
+```json
+// package.json
+
+{
+  "scripts": {
+    "build:types": "tsc --declarationDir ./dist/types --declaration --emitDeclarationOnly",
+    "build:esm": "tsc -p tsconfig.json",
+    "build:cjs": "tsc -p tsconfig-cjs.json",
+    "build": "rm -rf dist/* && npm run build:esm && npm run build:esm && npm run build:cjs && ./build-populate.sh",
+    "prepublishOnly": "npm run build" // <-- Add this line
+  }
+}
+```
+
+## Next steps
+
+Congratulations! If you followed this post until now all you have to do is **run** `npm run build` **and our math library should get transpiled** inside the `./dist` folder. **You've also learned how to setup a library project to be able to support both ESM and CJS projects**. But now you may be wondering... **what goes next?**
+
+Well, **the next step would be to package the contents of the dist folder and distribute them over a npm registry**. Most probably you want to distribute your library over [npmjs.org](npmjs.org). While this might need it's own post, **I'm going to assume that you've already created an account over** [npmjs.org](npmjs.org), **that you've set a _version_ inside of your _package.json_ file and that you want your package to be _public_**. Having all this in mind, in order to login to the npmjs registry you'll need to run `npm login` and log in inside the [npmjs.org](npmjs.org) website. Once you're logged in inside the npmjs registry, simply **run** `npm publish --access public` **to publish the** `./dist` **folder contents**.
+
+This is all I've got for you today,** I hope I was able to help you with creating or updating a library to make it compatible with CJS and ESM projects** and **I also hope you enjoyed reading this post**.
+
+**See you the next week with more nerdy stuff!**

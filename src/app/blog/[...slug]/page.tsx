@@ -3,6 +3,7 @@ import { PostData, getPost } from '../../../utils/posts';
 import path from 'path';
 import { Code } from 'bright';
 import React from 'react';
+import { darkCodeTheme, lightCodeTheme } from '../../../utils/codeThemes';
 
 interface BlogPostProps {
   params: { slug: string[] };
@@ -13,8 +14,8 @@ const components = {
 };
 
 Code.theme = {
-  dark: 'material-darker',
-  light: 'material-lighter',
+  dark: darkCodeTheme,
+  light: lightCodeTheme,
   lightSelector: 'html.light',
 };
 
@@ -24,12 +25,12 @@ const BlogPost = async ({ params }: BlogPostProps) => {
   )) as PostData;
 
   return (
-    <div>
+    <div className="w-full">
       <h1 className="text-5xl xl:text-6xl font-bold ">{title}</h1>
       <h3 className="text-xl mt-4 mb-16 font-semibold text-black dark:text-white text-opacity-50 dark:text-opacity-50">
         {date.toDateString()}
       </h3>
-      <div className="text-lg prose prose-strong:text-blue-600 dark:prose-strong:text-blue-400 dark:prose-invert w-auto m-x-2 xl:max-w-[65ch] xl:w-auto text-justify">
+      <div className="text-lg prose prose:sm md:prose-md xl:prose-xl prose-h4:underline dark:prose-invert w-auto m-x-2 xl:max-w-[65ch] xl:w-auto text-justify">
         <MDXRemote source={content} components={components} />
       </div>
     </div>
