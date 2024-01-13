@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+a,
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.prose :where(code):not(:where([class~='not-prose'] *))::before {
+  content: '';
+}
+.prose :where(code):not(:where([class~='not-prose'] *))::after {
+  content: '';
+}
+
+.dark code {
+  background-color: #1f2937;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+}
+
+code {
+  background-color: #e5e7eb;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+}
