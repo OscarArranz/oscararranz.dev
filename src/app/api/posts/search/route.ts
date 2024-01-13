@@ -10,7 +10,7 @@ export const GET = async (request: NextRequest) => {
   const searchQuery = request.nextUrl.searchParams.get('searchQuery');
 
   if (!searchQuery) {
-    return Response.json({ searchResults: {}, searchQuery: '' });
+    return Response.json({ searchResults: {}, searchQuery });
   }
 
   try {
@@ -47,6 +47,6 @@ export const GET = async (request: NextRequest) => {
 
     return Response.json({ searchResults: { searchResults, searchQuery } });
   } catch (error) {
-    return Response.json({ searchResults: {}, searchQuery: '' });
+    return Response.json({ searchResults: {}, searchQuery });
   }
 };
