@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import matter from 'gray-matter';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -63,11 +62,7 @@ export const getPostPaths = async (): Promise<PostPaths> => {
 };
 
 export const getPost = async (fileUrl: string): Promise<PostData | null> => {
-  let postPath = path.join('./posts/', fileUrl);
-  postPath = getPublicFilePath(postPath);
-
-  console.log('POST_PATH', postPath);
-  console.log('CWD', cwd());
+  const postPath = getPublicFilePath(path.join('./posts/', fileUrl));
 
   try {
     const postFileContent = await fs.readFile(postPath);
