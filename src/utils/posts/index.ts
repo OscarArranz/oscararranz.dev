@@ -3,6 +3,7 @@ import matter from 'gray-matter';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { cwd } from 'node:process';
+import { getPublicFilePath } from '../file';
 
 export interface PostPath {
   dir: string;
@@ -45,7 +46,8 @@ const buildPostTags = (tags: string): string[] => {
 };
 
 export const getPostPaths = async (): Promise<PostPaths> => {
-  const postsPath = await fs.readdir('./posts/', { recursive: true });
+  const publicPath = getPublicFilePath('./posts/');
+  const postsPath = await fs.readdir(publicPath, { recursive: true });
 
   const postPaths = Promise.all(
     postsPath
@@ -61,7 +63,9 @@ export const getPostPaths = async (): Promise<PostPaths> => {
 };
 
 export const getPost = async (fileUrl: string): Promise<PostData | null> => {
-  const postPath = path.join('./posts/', fileUrl);
+  let postPath = path.join('./posts/', fileUrl);
+  postPath = getPublicFilePath(postPath);
+
   console.log('POST_PATH', postPath);
   console.log('CWD', cwd());
 
