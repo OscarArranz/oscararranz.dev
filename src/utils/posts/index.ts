@@ -74,6 +74,8 @@ export const getPost = async (fileUrl: string): Promise<PostData | null> => {
       url: `/blog/${fileUrl.replace('.mdx', '')}`,
     } as PostData;
   } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error(error);
     return null;
   }
 };
