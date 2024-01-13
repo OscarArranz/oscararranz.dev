@@ -1,6 +1,8 @@
+/* eslint-disable no-console */
 import matter from 'gray-matter';
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { cwd } from 'node:process';
 
 export interface PostPath {
   dir: string;
@@ -60,6 +62,8 @@ export const getPostPaths = async (): Promise<PostPaths> => {
 
 export const getPost = async (fileUrl: string): Promise<PostData | null> => {
   const postPath = path.join('./posts/', fileUrl);
+  console.log('POST_PATH', postPath);
+  console.log('CWD', cwd());
 
   try {
     const postFileContent = await fs.readFile(postPath);
