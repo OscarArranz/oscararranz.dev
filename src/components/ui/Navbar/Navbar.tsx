@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import HamburguerMenuButton from './HamburguerMenuButton';
 import { usePathname } from 'next/navigation';
 import Search from '../../../app/blog/components/Search';
-import { BlogNavigatorClient } from '../../../app/blog/components/BlogNavigator/BlogNavigatorClient';
+// import { BlogNavigatorClient } from '../../../app/blog/components/BlogNavigator/BlogNavigatorClient';
 import Link from 'next/link';
 import { PostSearchResultsResponse } from '../../../utils/posts';
 import ThemeSwitch from './ThemeSwitch';
@@ -59,10 +59,10 @@ const Navbar = () => {
             searchResults={searchResults}
             setSearchResults={setSearchResults}
           />
-          {(!searchResults ||
+          {/*(!searchResults ||
             Object.keys(searchResults.searchResults).length === 0) && (
             <BlogNavigatorClient />
-          )}
+            )*/}
         </div>
       )}
     </nav>

@@ -20,7 +20,7 @@ const RecentPosts = async () => {
               {post.title}
             </span>
 
-            <div className="flex w-full justify-between">
+            <div className="flex flex-col gap-4 md:flex-row md:gap-0 w-full md:justify-between">
               <span className="block font-medium text-sm text-black text-opacity-50 dark:text-white dark:text-opacity-50">
                 {post.date.toDateString()}
               </span>
