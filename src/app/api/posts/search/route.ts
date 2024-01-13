@@ -47,6 +47,8 @@ export const GET = async (request: NextRequest) => {
 
     return Response.json({ searchResults: { searchResults, searchQuery } });
   } catch (error) {
+    // eslint-disable-next-line no-console
+    console.log(error);
     return Response.json({ searchResults: {}, searchQuery });
   }
 };
