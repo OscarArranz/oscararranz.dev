@@ -4,12 +4,13 @@ import matter from 'gray-matter';
 import { readFileSync } from 'fs';
 import { PostSearchResults } from '../../../../utils/posts';
 import { removeMarkdown } from '../../../../utils';
+import { getPublicFilePath } from '../../../../utils/file';
 
 export const GET = async (request: NextRequest) => {
   const searchQuery = request.nextUrl.searchParams.get('searchQuery');
 
   if (!searchQuery) {
-    return Response.json({ searchResults: {} });
+    return Response.json({ searchResults: {}, searchQuery: '' });
   }
 
   try {
@@ -26,7 +27,7 @@ export const GET = async (request: NextRequest) => {
 
     const searchResults = grepResults.reduce((prev, cur) => {
       const [fileUrl, lineNumber, ...rest] = cur.split(':');
-      const { title } = matter(readFileSync(fileUrl)).data;
+      const { title } = matter(readFileSync(getPublicFilePath(fileUrl))).data;
       const content = rest.join(':');
 
       return {
@@ -46,6 +47,6 @@ export const GET = async (request: NextRequest) => {
 
     return Response.json({ searchResults: { searchResults, searchQuery } });
   } catch (error) {
-    return Response.json({ searchResults: {} });
+    return Response.json({ searchResults: {}, searchQuery: '' });
   }
 };
