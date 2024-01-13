@@ -98,7 +98,7 @@ const SearchResults = ({ searchResults, searchBarRef }: SearchResultsProps) => {
 
   if (
     !searchResults ||
-    Object.keys(searchResults.searchResults).length === 0 ||
+    Object.keys(searchResults?.searchResults).length === 0 ||
     !isOpen
   ) {
     return null;
