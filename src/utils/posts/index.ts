@@ -1,6 +1,7 @@
 import matter from 'gray-matter';
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import { getPublicFilePath } from '../file';
 
 export interface PostPath {
   dir: string;
@@ -43,7 +44,8 @@ const buildPostTags = (tags: string): string[] => {
 };
 
 export const getPostPaths = async (): Promise<PostPaths> => {
-  const postsPath = await fs.readdir('./posts/', { recursive: true });
+  const publicPath = getPublicFilePath('./posts/');
+  const postsPath = await fs.readdir(publicPath, { recursive: true });
 
   const postPaths = Promise.all(
     postsPath
@@ -59,7 +61,7 @@ export const getPostPaths = async (): Promise<PostPaths> => {
 };
 
 export const getPost = async (fileUrl: string): Promise<PostData | null> => {
-  const postPath = path.join('./posts/', fileUrl);
+  const postPath = getPublicFilePath(path.join('./posts/', fileUrl));
 
   try {
     const postFileContent = await fs.readFile(postPath);
@@ -74,6 +76,8 @@ export const getPost = async (fileUrl: string): Promise<PostData | null> => {
       url: `/blog/${fileUrl.replace('.mdx', '')}`,
     } as PostData;
   } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error(error);
     return null;
   }
 };
