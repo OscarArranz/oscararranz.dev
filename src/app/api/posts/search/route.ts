@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { NextRequest, NextResponse } from 'next/server';
 import { spawnSync } from 'child_process';
 import matter from 'gray-matter';
@@ -19,12 +20,17 @@ export const GET = async (request: NextRequest) => {
       cwd: getPublicFilePath('./posts/'),
     });
     const fileUrls = find.stdout.toString().split('\n').slice(0, -1);
+
+    console.log(fileUrls);
+
     const grep = spawnSync(
       'grep',
       ['-n', '-i', '-H', '-E', searchQuery, ...fileUrls],
       { cwd: getPublicFilePath('./posts/') }
     );
     const grepResults = grep.stdout.toString().split('\n').slice(0, -1);
+
+    console.log(grepResults);
 
     const searchResults = grepResults.reduce((prev, cur) => {
       const [fileUrl, lineNumber, ...rest] = cur.split(':');
