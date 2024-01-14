@@ -19,6 +19,9 @@ export const GET = async (request: NextRequest) => {
     const find = spawnSync('find', ['-type', 'f', '-name', '*.mdx'], {
       cwd: getPublicFilePath('./posts/'),
     });
+
+    console.log(find);
+
     const fileUrls = find.stdout.toString().split('\n').slice(0, -1);
 
     console.log(fileUrls);
