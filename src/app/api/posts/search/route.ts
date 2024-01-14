@@ -16,7 +16,7 @@ export const GET = async (request: NextRequest) => {
   }
 
   try {
-    const find = spawnSync('find', ['-type', 'f', '-name', '*.mdx'], {
+    const find = spawnSync('/usr/bin/find', ['-type', 'f', '-name', '*.mdx'], {
       cwd: getPublicFilePath('./posts/'),
     });
 
@@ -27,7 +27,7 @@ export const GET = async (request: NextRequest) => {
     console.log(fileUrls);
 
     const grep = spawnSync(
-      'grep',
+      '/usr/bin/grep',
       ['-n', '-i', '-H', '-E', searchQuery, ...fileUrls],
       { cwd: getPublicFilePath('./posts/') }
     );
