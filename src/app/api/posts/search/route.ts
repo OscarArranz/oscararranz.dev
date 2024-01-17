@@ -28,7 +28,8 @@ export const GET = async (request: NextRequest) => {
 
     const fileUrls = find.stdout.toString().split('\n').slice(0, -1);
 
-    console.log(find.stdout.toString());
+    console.log('Find output: ', find.stdout.toString());
+    console.log('Error: ', find.stderr.toString());
 
     console.log(fileUrls);
 
