@@ -1,32 +1,43 @@
-import { NextRequest } from 'next/server';
+/* eslint-disable no-console */
+import { NextRequest, NextResponse } from 'next/server';
 import { spawnSync } from 'child_process';
 import matter from 'gray-matter';
 import { readFileSync } from 'fs';
 import { PostSearchResults } from '../../../../utils/posts';
 import { removeMarkdown } from '../../../../utils';
+import { getPublicFilePath } from '../../../../utils/file';
+import path from 'path';
 
 export const GET = async (request: NextRequest) => {
   const searchQuery = request.nextUrl.searchParams.get('searchQuery');
 
   if (!searchQuery) {
-    return Response.json({ searchResults: {} });
+    return NextResponse.json({ searchResults: {}, searchQuery });
   }
 
   try {
-    const find = spawnSync('find', ['-type', 'f', '-name', '*.mdx']);
+    const find = spawnSync(
+      getPublicFilePath('./utils/find'),
+      ['-type', 'f', '-name', '*.mdx'],
+      {
+        cwd: getPublicFilePath('./posts/'),
+      }
+    );
+
     const fileUrls = find.stdout.toString().split('\n').slice(0, -1);
-    const grep = spawnSync('grep', [
-      '-n',
-      '-i',
-      '-E',
-      searchQuery,
-      ...fileUrls,
-    ]);
+
+    const grep = spawnSync(
+      getPublicFilePath('./utils/grep'),
+      ['-n', '-i', '-H', '-E', searchQuery, ...fileUrls],
+      { cwd: getPublicFilePath('./posts/') }
+    );
     const grepResults = grep.stdout.toString().split('\n').slice(0, -1);
 
     const searchResults = grepResults.reduce((prev, cur) => {
       const [fileUrl, lineNumber, ...rest] = cur.split(':');
-      const { title } = matter(readFileSync(fileUrl)).data;
+      const { title } = matter(
+        readFileSync(getPublicFilePath(path.join('./posts/', fileUrl)))
+      ).data;
       const content = rest.join(':');
 
       return {
@@ -44,8 +55,10 @@ export const GET = async (request: NextRequest) => {
       };
     }, {} as PostSearchResults);
 
-    return Response.json({ searchResults: { searchResults, searchQuery } });
+    return NextResponse.json({ searchResults: { searchResults, searchQuery } });
   } catch (error) {
-    return Response.json({ searchResults: {} });
+    // eslint-disable-next-line no-console
+    console.error(error);
+    return NextResponse.json({ searchResults: {}, searchQuery });
   }
 };
