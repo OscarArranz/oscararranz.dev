@@ -4,6 +4,7 @@ import path from 'path';
 import { Code } from 'bright';
 import React from 'react';
 import { darkCodeTheme, lightCodeTheme } from '../../../utils/codeThemes';
+import Link, { LinkProps } from 'next/link';
 
 interface BlogPostProps {
   params: { slug: string[] };
@@ -11,6 +12,13 @@ interface BlogPostProps {
 
 const components = {
   pre: (props: React.PropsWithChildren) => <Code {...props} />,
+  a: (props: React.PropsWithChildren) => (
+    <Link
+      {...(props as LinkProps)}
+      className="text-blue-600 dark:text-blue-400 hover:underline"
+      target="_blank"
+    />
+  ),
 };
 
 Code.theme = {
