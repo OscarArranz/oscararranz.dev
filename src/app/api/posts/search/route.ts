@@ -16,9 +16,13 @@ export const GET = async (request: NextRequest) => {
   }
 
   try {
-    const find = spawnSync('/usr/bin/find', ['-type', 'f', '-name', '*.mdx'], {
-      cwd: getPublicFilePath('./posts/'),
-    });
+    const find = spawnSync(
+      getPublicFilePath('./utils/find'),
+      ['-type', 'f', '-name', '*.mdx'],
+      {
+        cwd: getPublicFilePath('./posts/'),
+      }
+    );
 
     console.log(find);
 
@@ -27,7 +31,7 @@ export const GET = async (request: NextRequest) => {
     console.log(fileUrls);
 
     const grep = spawnSync(
-      '/usr/bin/grep',
+      getPublicFilePath('./utils/grep'),
       ['-n', '-i', '-H', '-E', searchQuery, ...fileUrls],
       { cwd: getPublicFilePath('./posts/') }
     );
