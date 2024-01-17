@@ -24,14 +24,7 @@ export const GET = async (request: NextRequest) => {
       }
     );
 
-    console.log(find);
-
     const fileUrls = find.stdout.toString().split('\n').slice(0, -1);
-
-    console.log('Find output: ', find.stdout.toString());
-    console.log('Error: ', find.stderr.toString());
-
-    console.log(fileUrls);
 
     const grep = spawnSync(
       getPublicFilePath('./utils/grep'),
@@ -39,8 +32,6 @@ export const GET = async (request: NextRequest) => {
       { cwd: getPublicFilePath('./posts/') }
     );
     const grepResults = grep.stdout.toString().split('\n').slice(0, -1);
-
-    console.log(grepResults);
 
     const searchResults = grepResults.reduce((prev, cur) => {
       const [fileUrl, lineNumber, ...rest] = cur.split(':');
