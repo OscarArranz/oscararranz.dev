@@ -1,0 +1,19 @@
+---
+title: Migrating a Next.js app to the App Router
+date: 2024-06-03T14:05:29.461Z
+tags: typescript, javascript, nextjs, react
+---
+
+We have been dabbling with the idea of migrating our Next.js application from the Pages Router to the App Router for a while, the App Router offers server components by default, a new routing system that, in my own personal opinion, helps the developer to better structure its project, and promises better performance than its counterpart, the Pages Router.
+Although this might sound great and it surely steered us into the direction of migrating our application to the new router, we discovered a few pieces that proved difficult to migrate.
+We first realized there were some parts of our application that were built specifically for the Pages Router, and far from being able to refactor them, we needed to completely rewrite them.
+Soon, we also discovered there were some libraries we were using that didn’t play well with React’s hydration, the process that allows the server to serve a component’s HTML first and then inject the JavaScript code providing reactivity.
+All of this stopped us from migrating our application for a while.
+
+At some point, a new feature required implementing new pages for our app and we saw an opportunity to start incrementally migrating the app.
+
+# Fixing MUI fonts
+
+One of the points that proved tricky while trying to migrate to the App Router was getting MUI to play nicely with the new router.
+See, MUI uses Emotion under the hood to manage styling, a library that lets you write CSS in JS.
+The problem is that
