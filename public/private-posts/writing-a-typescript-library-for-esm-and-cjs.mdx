@@ -4,7 +4,7 @@ date: 2024-01-11T23:01:04.504Z
 tags: typescript, javascript, nodejs, esm, cjs, library, npm
 ---
 
-The other day I was at work and I needed to verify some Azure JWTs. I wasn't going to write the logic to do so, _of course_, so I quickly opened Github instead and went in search of a nice library that would hopefully solve my problem. Conveniently, there was a small library that did this, so I did what anyone would have done in my position: **I installed the library and prayed that it would work out of the box**. I crossed my fingers, run `npm install`, imported the package and... **I got an error that told me I couldn't import an ESM package**.
+The other day I was at work and I needed to verify some Azure JWTs. Writing the logic myself might have taken a little too much time, so I quickly opened Github instead and went in search of a nice library that would hopefully solve this problem. Conveniently, there was a small library that did this, I tried installing the library but soon after running the code **I noticed an error that told me I couldn't import an ESM package**.
 
 See, the project I was working on uses Typescript and the code gets transpiled to CJS (_Common JS_), which is incompatible with ESM (_ES Modules_).
 
@@ -286,4 +286,4 @@ Well, **the next step would be to package the contents of the dist folder and di
 
 This is all I've got for you today, **I hope I was able to help you with creating or updating a library to make it compatible with CJS and ESM projects** and **I also hope you enjoyed reading this post**.
 
-**See you the next week with more nerdy stuff!**
+**See you soon!**
