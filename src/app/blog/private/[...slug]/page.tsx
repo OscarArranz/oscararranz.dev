@@ -1,9 +1,9 @@
 import { MDXRemote } from 'next-mdx-remote/rsc';
-import { PostData, getPost } from '../../../utils/posts';
+import { PostData, getPost } from '../../../../utils/posts';
 import path from 'path';
 import { Code } from 'bright';
 import React from 'react';
-import { darkCodeTheme, lightCodeTheme } from '../../../utils/codeThemes';
+import { darkCodeTheme, lightCodeTheme } from '../../../../utils/codeThemes';
 import Link, { LinkProps } from 'next/link';
 
 interface BlogPostProps {
@@ -30,7 +30,7 @@ Code.theme = {
 const BlogPost = async ({ params }: BlogPostProps) => {
   const { title, date, content } = (await getPost(
     path.normalize(`./${params.slug.join('/')}.mdx`),
-    './posts'
+    './private-posts'
   )) as PostData;
 
   return (

@@ -60,8 +60,11 @@ export const getPostPaths = async (): Promise<PostPaths> => {
   return postPaths;
 };
 
-export const getPost = async (fileUrl: string): Promise<PostData | null> => {
-  const postPath = getPublicFilePath(path.join('./posts/', fileUrl));
+export const getPost = async (
+  fileUrl: string,
+  folder = './posts'
+): Promise<PostData | null> => {
+  const postPath = getPublicFilePath(path.join(folder, fileUrl));
 
   try {
     const postFileContent = await fs.readFile(postPath);
